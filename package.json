@@ -1,0 +1,27 @@
+{
+  "name": "relay-enzyme",
+  "version": "0.0.1",
+  "description": "Solving painful headless testing of Relay-produced HOCs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vashigor/relay-enzyme.git"
+  },
+  "keywords": [
+    "react-native",
+    "relay",
+    "enzyme",
+    "react",
+    "bdd",
+    "mocha"
+  ],
+  "author": "Igor Tkachenko",
+  "license": "BSD-3-Clause",
+  "bugs": {
+    "url": "https://github.com/vashigor/relay-enzyme/issues"
+  },
+  "homepage": "https://github.com/vashigor/relay-enzyme#readme"
+}
