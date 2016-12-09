@@ -1,6 +1,6 @@
 {
   "name": "relay-enzyme",
-  "version": "0.0.3",
+  "version": "0.0.1",
   "description": "Solving painful headless testing of Relay-produced HOCs",
   "main": "index.js",
   "scripts": {
