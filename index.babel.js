@@ -1,10 +1,10 @@
 
 import { mount, ReactWrapper } from 'enzyme'
 
-export default class RealyEnzyme {
+export default class HOCEnzyme {
   static setup() {
     ReactWrapper.prototype.diveInto = function (predicate, single = true) {
-      const result = RealyEnzyme.diveInto(this, predicate, single)
+      const result = HOCEnzyme.diveInto(this, predicate, single)
       return this.wrap(result)
     }
   }

@@ -10,18 +10,18 @@ var _enzyme = require('enzyme');
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var RealyEnzyme = function () {
-  function RealyEnzyme() {
-    _classCallCheck(this, RealyEnzyme);
+var HOCEnzyme = function () {
+  function HOCEnzyme() {
+    _classCallCheck(this, HOCEnzyme);
   }
 
-  _createClass(RealyEnzyme, null, [{
+  _createClass(HOCEnzyme, null, [{
     key: 'setup',
     value: function setup() {
       _enzyme.ReactWrapper.prototype.diveInto = function (predicate) {
         var single = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
-        var result = RealyEnzyme.diveInto(this, predicate, single);
+        var result = HOCEnzyme.diveInto(this, predicate, single);
         return this.wrap(result);
       };
     }
@@ -61,7 +61,7 @@ var RealyEnzyme = function () {
     }
   }]);
 
-  return RealyEnzyme;
+  return HOCEnzyme;
 }();
 
-exports.default = RealyEnzyme;
+exports.default = HOCEnzyme;
