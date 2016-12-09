@@ -1,4 +1,4 @@
-# relay-enzyme
+# hoc-enzyme
 Solving painful headless testing of Relay-produced HOCs
 
 Install
