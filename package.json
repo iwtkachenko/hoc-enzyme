@@ -1,0 +1,31 @@
+{
+  "name": "hoc-enzyme",
+  "version": "0.0.1",
+  "description": "Solving painful headless testing of React HOCs with enzyme ",
+  "main": "index.js",
+  "scripts": {
+    "build": "babel index.babel.js -o index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vashigor/hoc-enzyme.git"
+  },
+  "keywords": [
+    "react-native",
+    "relay",
+    "enzyme",
+    "react",
+    "bdd",
+    "mocha"
+  ],
+  "author": "Igor Tkachenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vashigor/hoc-enzyme/issues"
+  },
+  "homepage": "https://github.com/vashigor/hoc-enzyme#readme",
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-latest": "^6.16.0"
+  }
+}
