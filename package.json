@@ -4,7 +4,7 @@
   "description": "Solving painful headless testing of Relay-produced HOCs",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "build": "babel index.babel.js -o index.js"
   },
   "repository": {
     "type": "git",
@@ -23,5 +23,9 @@
   "bugs": {
     "url": "https://github.com/vashigor/relay-enzyme/issues"
   },
-  "homepage": "https://github.com/vashigor/relay-enzyme#readme"
+  "homepage": "https://github.com/vashigor/relay-enzyme#readme",
+  "devDependencies": {
+    "babel-cli": "^6.18.0",
+    "babel-preset-latest": "^6.16.0"
+  }
 }
