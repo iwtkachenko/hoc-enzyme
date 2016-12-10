@@ -13,7 +13,7 @@ Install
 Usage with Apollo
 -----------------
 ```javascript
-describe('Test sandboxed react-native + apollo', () => {
+describe('Sandboxed react-native + apollo', () => {
   let wrapper
 
   const options = {context: {client, store:{}}}
@@ -23,13 +23,13 @@ describe('Test sandboxed react-native + apollo', () => {
   before(() => {
     wrapper = mount((
       <ApolloProvider client={client}>
-        <SendboxComponent />
+        <SandboxComponent />
       </ApolloProvider>
     ))
   })
 
-  it('should mount apollo component and fetch data', () => {
-    const tmp = wrapper.find(SendboxComponent).diveInto((child) => {
+  it('should fetch data from apollo component', () => {
+    const tmp = wrapper.find(SandboxComponent).diveInto((child) => {
       return child.type() == Text
     }, false)
 
