@@ -24,6 +24,10 @@ var HOCEnzyme = function () {
         var result = HOCEnzyme.diveInto(this, predicate, single);
         return this.wrap(result);
       };
+
+      _enzyme.ReactWrapper.prototype.unwrap = function (prop) {
+        return (0, _enzyme.mount)(this.node[prop]);
+      };
     }
   }, {
     key: 'diveInto',
@@ -37,10 +41,23 @@ var HOCEnzyme = function () {
         if (children && !Array.isArray(children)) {
           children = [children];
         }
+        if (node.node._reactInternalInstance && node.node._reactInternalInstance._renderedComponent) {
+          children = children || [];
+          children.push(node.node._reactInternalInstance._renderedComponent);
+        }
         if (children) {
           for (var index in children) {
-            if (children[index] && children[index].type) {
-              var child = (0, _enzyme.mount)(children[index]);
+            var unwrapped = children[index];
+            var child = void 0;
+            switch (true) {
+              case !!(unwrapped && unwrapped.type):
+                child = (0, _enzyme.mount)(unwrapped);
+                break;
+              case !!(unwrapped && unwrapped._currentElement):
+                child = node.wrap(unwrapped._currentElement);
+                break;
+            }
+            if (child) {
               if (predicate(child, node, index)) {
                 result.push(child);
                 if (single) {

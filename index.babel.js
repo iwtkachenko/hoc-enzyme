@@ -9,7 +9,7 @@ export default class HOCEnzyme {
     }
 
     ReactWrapper.prototype.unwrap = function(prop) {
-
+      return mount(this.node[prop])
     }
   }
 
@@ -19,10 +19,24 @@ export default class HOCEnzyme {
       if (children && !Array.isArray(children)) {
         children = [children]
       }
+      if (node.node._reactInternalInstance
+        && node.node._reactInternalInstance._renderedComponent) {
+        children = children || []
+        children.push(node.node._reactInternalInstance._renderedComponent)
+      }
       if (children) {
         for (const index in children) {
-          if (children[index] && children[index].type) {
-            const child = mount(children[index])
+          const unwrapped = children[index]
+          let child;
+          switch (true) {
+            case !!(unwrapped && unwrapped.type):
+              child = mount(unwrapped)
+              break;
+            case !!(unwrapped && unwrapped._currentElement):
+              child = node.wrap(unwrapped._currentElement)
+              break;
+          }
+          if (child) {
             if (predicate(child, node, index)) {
               result.push(child)
               if (single) {
