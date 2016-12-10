@@ -7,6 +7,10 @@ export default class HOCEnzyme {
       const result = HOCEnzyme.diveInto(this, predicate, single)
       return this.wrap(result)
     }
+
+    ReactWrapper.prototype.unwrap = function(prop) {
+
+    }
   }
 
   static diveInto (wrapper, predicate, single = true) {
