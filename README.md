@@ -10,8 +10,37 @@ Install
   2. HOCEnzyme.setup()
 
 
-Usage
------
+Usage with Apollo
+-----------------
+```javascript
+describe('Test sandboxed react-native + apollo', () => {
+  let wrapper
+
+  const options = {context: {client, store:{}}}
+
+  jsdom()
+
+  before(() => {
+    wrapper = mount((
+      <ApolloProvider client={client}>
+        <SendboxComponent />
+      </ApolloProvider>
+    ))
+  })
+
+  it('should mount apollo component and fetch data', () => {
+    const tmp = wrapper.find(SendboxComponent).diveInto((child) => {
+      return child.type() == Text
+    }, false)
+
+    expect(tmp.first()).to.have.props({children: 'Hello world'})
+  })
+})
+```
+
+
+Usage with Relay
+----------------
 
 ```javascript
 describe('<Home/>', () => {
@@ -24,9 +53,17 @@ describe('<Home/>', () => {
 
   const button = child => child.type() == TouchableHighlight
 
-  Relay.injectNetworkLayer(new RelayLocalSchema.NetworkLayer({ schema }))
-
   before(done => {
+    /**
+     * Home is a wrapped with Renderer Relay Container
+     * It renders the following jsx
+     * <View>
+     *   <TouchableHighlight ...>
+     *     <Text>...</Text>
+     *     <Text>...</Text>
+     *   </TouchableHighlight>
+     * </View>
+     */
     wrapper = mount(<Home />)
     done()
   })

@@ -24,6 +24,10 @@ export default class HOCEnzyme {
         children = children || []
         children.push(node.node._reactInternalInstance._renderedComponent)
       }
+      if (node.node.renderedElement) {
+        children = children || []
+        children.push(node.node.renderedElement)
+      }
       if (children) {
         for (const index in children) {
           const unwrapped = children[index]

@@ -45,6 +45,10 @@ var HOCEnzyme = function () {
           children = children || [];
           children.push(node.node._reactInternalInstance._renderedComponent);
         }
+        if (node.node.renderedElement) {
+          children = children || [];
+          children.push(node.node.renderedElement);
+        }
         if (children) {
           for (var index in children) {
             var unwrapped = children[index];
