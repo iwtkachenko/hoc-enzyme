@@ -9,7 +9,44 @@ Install
   1. import HOCEnzyme from 'hoc-enzyme'
   2. HOCEnzyme.setup()
 
+Syntax
+======
+```javascript
+wrapper.diveInto((child) => child.type() == Text)
+```
 
+With Shallow rendering
+======================
+Usage with Apollo
+```javascript
+describe('Sandboxed react-native + apollo without dom', () => {
+  let wrapper
+
+  const options = {context: {client, store: {}}}
+
+  before(() => {
+    wrapper = shallow((
+      <ApolloProvider client={client}>
+        <SandboxComponent />
+      </ApolloProvider>
+    ))
+  })
+
+  it('should fetch data from apollo component', () => {
+    // With shallow rendering we need to pass context explicitly
+    options.context.store = client.store
+    wrapper.setPassedContext(options.context)
+    const tmp = wrapper.diveInto(child => {
+      return child.type() == Text
+    }, false)
+
+    expect(tmp.first()).to.have.props({children: 'Hello world'})
+  })
+})
+```
+
+With DOM rendering
+==================
 Usage with Apollo
 -----------------
 ```javascript
@@ -60,8 +97,9 @@ describe('<Home/>', () => {
      * <View>
      *   <TouchableHighlight ...>
      *     <Text>...</Text>
-     *     <Text>...</Text>
      *   </TouchableHighlight>
+     *   <Text>...</Text>
+     *   <Text>...</Text>
      * </View>
      */
     wrapper = mount(<Home />)

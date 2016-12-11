@@ -21,17 +21,58 @@ var HOCEnzyme = function () {
       _enzyme.ReactWrapper.prototype.diveInto = function (predicate) {
         var single = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
-        var result = HOCEnzyme.diveInto(this, predicate, single);
-        return this.wrap(result);
+        return this.wrap(HOCEnzyme.diveIntoMounted(this, predicate, single));
       };
 
-      _enzyme.ReactWrapper.prototype.unwrap = function (prop) {
-        return (0, _enzyme.mount)(this.node[prop]);
+      _enzyme.ShallowWrapper.prototype._passedContext = null;
+
+      _enzyme.ShallowWrapper.prototype.setPassedContext = function (context) {
+        this._passedContext = context;
+      };
+
+      _enzyme.ShallowWrapper.prototype.diveInto = function (predicate) {
+        var single = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+        return this.wrap(HOCEnzyme.diveIntoShallowed(this, predicate, single));
       };
     }
   }, {
-    key: 'diveInto',
-    value: function diveInto(wrapper, predicate) {
+    key: 'diveIntoShallowed',
+    value: function diveIntoShallowed(wrapper, predicate) {
+      var single = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+
+      var _wrapped = wrapper;
+      var result = [];
+      if (_wrapped.node.type.WrappedComponent) {
+        var context = {};
+        if (_wrapped._passedContext) {
+          for (var prop in _wrapped.node.type.contextTypes) {
+            context[prop] = _wrapped._passedContext[prop];
+          }
+        }
+        _wrapped = _wrapped.dive({ context: context });
+        if (predicate(_wrapped, wrapper)) {
+          result.push(_wrapped);
+          if (single) {
+            return _wrapped;
+          }
+        }
+        result = result.concat(this.diveIntoShallowed(_wrapped.shallow(), predicate, single)).filter(function (el) {
+          return el;
+        });
+        if (single && result.length) {
+          return result.shift();
+        }
+      }
+      result = result.concat(wrapper.findWhere(predicate).nodes).filter(function (el) {
+        return el;
+      });
+
+      return single ? result.shift() : result;
+    }
+  }, {
+    key: 'diveIntoMounted',
+    value: function diveIntoMounted(wrapper, predicate) {
       var _this = this;
 
       var single = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
@@ -68,7 +109,7 @@ var HOCEnzyme = function () {
                   break;
                 }
               }
-              result = result.concat(_this.diveInto(child, predicate, single)).filter(function (el) {
+              result = result.concat(_this.diveIntoMounted(child, predicate, single)).filter(function (el) {
                 return el;
               });
             }

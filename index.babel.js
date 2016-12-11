@@ -1,19 +1,53 @@
 
-import { mount, ReactWrapper } from 'enzyme'
+import { mount, ReactWrapper, ShallowWrapper } from 'enzyme'
 
 export default class HOCEnzyme {
   static setup() {
     ReactWrapper.prototype.diveInto = function (predicate, single = true) {
-      const result = HOCEnzyme.diveInto(this, predicate, single)
-      return this.wrap(result)
+      return this.wrap(HOCEnzyme.diveIntoMounted(this, predicate, single))
     }
 
-    ReactWrapper.prototype.unwrap = function(prop) {
-      return mount(this.node[prop])
+    ShallowWrapper.prototype._passedContext = null
+
+    ShallowWrapper.prototype.setPassedContext = function (context) {
+      this._passedContext = context
+    }
+
+    ShallowWrapper.prototype.diveInto = function (predicate, single = true) {
+      return this.wrap(HOCEnzyme.diveIntoShallowed(this, predicate, single))
     }
   }
 
-  static diveInto (wrapper, predicate, single = true) {
+  static diveIntoShallowed(wrapper, predicate, single = true) {
+    let _wrapped = wrapper;
+    let result = []
+    if (_wrapped.node.type.WrappedComponent) {
+      let context = {}
+      if (_wrapped._passedContext) {
+        for (const prop in _wrapped.node.type.contextTypes) {
+          context[prop] = _wrapped._passedContext[prop]
+        }
+      }
+      _wrapped = _wrapped.dive({context})
+      if (predicate(_wrapped, wrapper)) {
+        result.push(_wrapped)
+        if (single) {
+          return _wrapped;
+        }
+      }
+      result = result.concat(this.diveIntoShallowed(_wrapped.shallow(), predicate, single))
+        .filter(el => el)
+      if (single && result.length) {
+        return result.shift()
+      }
+    }
+    result = result.concat(wrapper.findWhere(predicate).nodes)
+      .filter(el => el)
+
+    return single ? result.shift() : result;
+  }
+
+  static diveIntoMounted (wrapper, predicate, single = true) {
     let result = wrapper.reduce((result, node) => {
       let children = node.prop('children')
       if (children && !Array.isArray(children)) {
@@ -47,7 +81,7 @@ export default class HOCEnzyme {
                 break
               }
             }
-            result = result.concat(this.diveInto(child, predicate, single))
+            result = result.concat(this.diveIntoMounted(child, predicate, single))
               .filter(el => el)
           }
         }
