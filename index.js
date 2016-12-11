@@ -96,7 +96,8 @@ var HOCEnzyme = function () {
             var child = void 0;
             switch (true) {
               case !!(unwrapped && unwrapped.type):
-                child = (0, _enzyme.mount)(unwrapped);
+                var context = node.node.context || {};
+                child = (0, _enzyme.mount)(unwrapped, { context: context });
                 break;
               case !!(unwrapped && unwrapped._currentElement):
                 child = node.wrap(unwrapped._currentElement);

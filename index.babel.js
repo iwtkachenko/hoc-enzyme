@@ -68,7 +68,8 @@ export default class HOCEnzyme {
           let child;
           switch (true) {
             case !!(unwrapped && unwrapped.type):
-              child = mount(unwrapped)
+              let context = node.node.context || {}
+              child = mount(unwrapped, {context})
               break;
             case !!(unwrapped && unwrapped._currentElement):
               child = node.wrap(unwrapped._currentElement)
