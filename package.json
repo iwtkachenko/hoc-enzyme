@@ -1,6 +1,6 @@
 {
   "name": "hoc-enzyme",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Solving painful headless testing of React HOCs with enzyme ",
   "main": "index.js",
   "scripts": {
