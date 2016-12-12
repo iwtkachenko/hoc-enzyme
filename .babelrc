@@ -1,5 +1,8 @@
 {
   "presets": [
     "latest"
+  ],
+  "plugins": [
+    "syntax-flow"
   ]
 }

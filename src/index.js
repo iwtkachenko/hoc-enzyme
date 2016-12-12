@@ -1,6 +1,8 @@
 
 import { mount, ReactWrapper, ShallowWrapper } from 'enzyme'
 
+import RenderedElementUnwrapper from './unwrap/rendered/element'
+
 export default class HOCEnzyme {
   static setup() {
     ReactWrapper.prototype.diveInto = function (predicate, single = true) {
@@ -47,16 +49,49 @@ export default class HOCEnzyme {
     return single ? result.shift() : result;
   }
 
+  static _diveAndProcess(result, item, predicate, single) {
+    let extracted = this.diveIntoMounted(item, predicate, single)
+    if (single) {
+      if (extracted) {
+        return extracted
+      }
+    } else {
+      if (extracted.length) {
+        result.push(...extracted)
+      }
+    }
+
+    return null
+  }
+
   static diveIntoMounted (wrapper, predicate, single = true) {
-    let result = wrapper.reduce((result, node) => {
+    let result = []
+    const unwrapper = new RenderedElementUnwrapper(wrapper)
+    if (unwrapper.hasRenderedComponent()) {
+      const unwrapped = unwrapper.unwrapElement()
+      try {
+        if (predicate(unwrapped, wrapper, 0)) {
+          if (single) {
+            return unwrapped;
+          }
+          result.push(unwrapped)
+        }
+      } catch (e) {}
+
+      let tmp
+      if (tmp = this._diveAndProcess(result, unwrapped, predicate, single)) {
+        return tmp;
+      }
+    }
+    result = wrapper.reduce((result, node) => {
       let children = node.prop('children')
       if (children && !Array.isArray(children)) {
         children = [children]
       }
-      if (node.node._reactInternalInstance
-        && node.node._reactInternalInstance._renderedComponent) {
+      const unwrapper = new RenderedElementUnwrapper(node)
+      if (unwrapper.hasRenderedComponent()) {
         children = children || []
-        children.push(node.node._reactInternalInstance._renderedComponent)
+        children.push(unwrapper)
       }
       if (node.node.renderedElement) {
         children = children || []
@@ -71,25 +106,31 @@ export default class HOCEnzyme {
               let context = node.node.context || {}
               child = mount(unwrapped, {context})
               break;
-            case !!(unwrapped && unwrapped._currentElement):
-              child = node.wrap(unwrapped._currentElement)
+            case (unwrapped instanceof RenderedElementUnwrapper):
+              child = unwrapped.unwrapElement()
               break;
           }
           if (child) {
-            if (predicate(child, node, index)) {
-              result.push(child)
-              if (single) {
-                break
+            try {
+              if (predicate(child, node, index)) {
+                result.push(child)
+                if (single) {
+                  return result;
+                }
               }
+            } catch(e) {}
+
+            let tmp
+            if (tmp = this._diveAndProcess(result, child, predicate, single)) {
+              result.push(tmp)
+              return result;
             }
-            result = result.concat(this.diveIntoMounted(child, predicate, single))
-              .filter(el => el)
           }
         }
       }
 
       return result
-    }, [])
+    }, result)
 
     return single ? result.shift() : result
   }

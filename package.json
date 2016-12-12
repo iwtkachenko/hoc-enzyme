@@ -4,7 +4,7 @@
   "description": "Solving painful headless testing of React HOCs with enzyme ",
   "main": "index.js",
   "scripts": {
-    "build": "babel index.babel.js -o index.js"
+    "build": "babel -d dist/ src/**/*.js"
   },
   "repository": {
     "type": "git",
