@@ -124,11 +124,6 @@ var HOCEnzyme = function () {
         if (children && !Array.isArray(children)) {
           children = [children];
         }
-        /* const unwrapper = new RenderedElementUnwrapper(node)
-        if (unwrapper.hasRenderedComponent()) {
-          children = children || []
-          children.push(unwrapper)
-        }*/
         if (node.node.renderedElement) {
           children = children || [];
           children.push(node.node.renderedElement);
@@ -140,16 +135,8 @@ var HOCEnzyme = function () {
             if (_unwrapped && _unwrapped.type) {
               var context = node.node.context || {};
               child = (0, _enzyme.mount)(_unwrapped, { context: context });
+              child.__unwrapped = _unwrapped;
             }
-            /* switch (true) {
-              case !!(unwrapped && unwrapped.type):
-                let context = node.node.context || {}
-                child = mount(unwrapped, {context})
-                break;
-              case (unwrapped instanceof RenderedElementUnwrapper):
-                child = unwrapped.unwrapElement()
-                break;
-            } */
             if (child) {
               try {
                 if (predicate(child, node, index)) {

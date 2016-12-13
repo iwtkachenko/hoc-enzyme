@@ -25,7 +25,10 @@ var ElementUnwrapper = function () {
   }, {
     key: 'unwrapElement',
     value: function unwrapElement() {
-      return this.node.wrap(this.node.node._reactInternalInstance._renderedComponent._currentElement);
+      var el = this.node.node._reactInternalInstance._renderedComponent._currentElement;
+      var wrapped = this.node.wrap(el);
+      wrapped.__unwrapped = el;
+      return wrapped;
     }
   }]);
 

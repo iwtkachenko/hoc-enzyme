@@ -99,6 +99,7 @@ export default class HOCEnzyme {
           if (unwrapped && unwrapped.type) {
             let context = node.node.context || {}
             child = mount(unwrapped, {context})
+            child.__unwrapped = unwrapped
           }
           if (child) {
             try {

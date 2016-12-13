@@ -13,8 +13,9 @@ export default class ElementUnwrapper {
   }
 
   unwrapElement() {
-    return this.node.wrap(
-      this.node.node._reactInternalInstance._renderedComponent._currentElement
-    )
+    const el = this.node.node._reactInternalInstance._renderedComponent._currentElement
+    let wrapped = this.node.wrap(el)
+    wrapped.__unwrapped = el
+    return wrapped
   }
 }
