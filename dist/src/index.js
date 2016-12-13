@@ -124,11 +124,11 @@ var HOCEnzyme = function () {
         if (children && !Array.isArray(children)) {
           children = [children];
         }
-        var unwrapper = new _element2.default(node);
+        /* const unwrapper = new RenderedElementUnwrapper(node)
         if (unwrapper.hasRenderedComponent()) {
-          children = children || [];
-          children.push(unwrapper);
-        }
+          children = children || []
+          children.push(unwrapper)
+        }*/
         if (node.node.renderedElement) {
           children = children || [];
           children.push(node.node.renderedElement);
@@ -137,15 +137,19 @@ var HOCEnzyme = function () {
           for (var index in children) {
             var _unwrapped = children[index];
             var child = void 0;
-            switch (true) {
-              case !!(_unwrapped && _unwrapped.type):
-                var context = node.node.context || {};
-                child = (0, _enzyme.mount)(_unwrapped, { context: context });
-                break;
-              case _unwrapped instanceof _element2.default:
-                child = _unwrapped.unwrapElement();
-                break;
+            if (_unwrapped && _unwrapped.type) {
+              var context = node.node.context || {};
+              child = (0, _enzyme.mount)(_unwrapped, { context: context });
             }
+            /* switch (true) {
+              case !!(unwrapped && unwrapped.type):
+                let context = node.node.context || {}
+                child = mount(unwrapped, {context})
+                break;
+              case (unwrapped instanceof RenderedElementUnwrapper):
+                child = unwrapped.unwrapElement()
+                break;
+            } */
             if (child) {
               try {
                 if (predicate(child, node, index)) {

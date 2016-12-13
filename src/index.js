@@ -88,11 +88,6 @@ export default class HOCEnzyme {
       if (children && !Array.isArray(children)) {
         children = [children]
       }
-      const unwrapper = new RenderedElementUnwrapper(node)
-      if (unwrapper.hasRenderedComponent()) {
-        children = children || []
-        children.push(unwrapper)
-      }
       if (node.node.renderedElement) {
         children = children || []
         children.push(node.node.renderedElement)
@@ -101,14 +96,9 @@ export default class HOCEnzyme {
         for (const index in children) {
           const unwrapped = children[index]
           let child;
-          switch (true) {
-            case !!(unwrapped && unwrapped.type):
-              let context = node.node.context || {}
-              child = mount(unwrapped, {context})
-              break;
-            case (unwrapped instanceof RenderedElementUnwrapper):
-              child = unwrapped.unwrapElement()
-              break;
+          if (unwrapped && unwrapped.type) {
+            let context = node.node.context || {}
+            child = mount(unwrapped, {context})
           }
           if (child) {
             try {
