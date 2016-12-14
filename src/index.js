@@ -20,50 +20,6 @@ export default class HOCEnzyme {
     }
   }
 
-  static diveIntoShallowed(wrapper, predicate, single = true) {
-    let _wrapped = wrapper;
-    let result = []
-    if (_wrapped.node.type.WrappedComponent) {
-      let context = {}
-      if (_wrapped._passedContext) {
-        for (const prop in _wrapped.node.type.contextTypes) {
-          context[prop] = _wrapped._passedContext[prop]
-        }
-      }
-      _wrapped = _wrapped.dive({context})
-      if (predicate(_wrapped, wrapper)) {
-        result.push(_wrapped)
-        if (single) {
-          return _wrapped;
-        }
-      }
-      result = result.concat(this.diveIntoShallowed(_wrapped.shallow(), predicate, single))
-        .filter(el => el)
-      if (single && result.length) {
-        return result.shift()
-      }
-    }
-    result = result.concat(wrapper.findWhere(predicate).nodes)
-      .filter(el => el)
-
-    return single ? result.shift() : result;
-  }
-
-  static _diveAndProcess(result, item, predicate, single) {
-    let extracted = this.diveIntoMounted(item, predicate, single)
-    if (single) {
-      if (extracted) {
-        return extracted
-      }
-    } else {
-      if (extracted.length) {
-        result.push(...extracted)
-      }
-    }
-
-    return null
-  }
-
   static diveIntoMounted (wrapper, predicate, single = true) {
     let result = []
     const unwrapper = new RenderedElementUnwrapper(wrapper)
@@ -97,8 +53,16 @@ export default class HOCEnzyme {
           const unwrapped = children[index]
           let child;
           if (unwrapped && unwrapped.type) {
-            let context = node.node.context || {}
-            child = mount(unwrapped, {context})
+            let context = node.node.context || null
+            for (const type in node.node.type.childContextTypes) {
+              context = context || {}
+              context[type] = node.prop(type)
+            }
+            if (context) {
+              child = mount(unwrapped, {context})
+            } else {
+              child = mount(unwrapped)
+            }
             child.__unwrapped = unwrapped
           }
           if (child) {
@@ -124,5 +88,49 @@ export default class HOCEnzyme {
     }, result)
 
     return single ? result.shift() : result
+  }
+
+  static _diveAndProcess(result, item, predicate, single) {
+    let extracted = this.diveIntoMounted(item, predicate, single)
+    if (single) {
+      if (extracted) {
+        return extracted
+      }
+    } else {
+      if (extracted.length) {
+        result.push(...extracted)
+      }
+    }
+
+    return null
+  }
+
+  static diveIntoShallowed(wrapper, predicate, single = true) {
+    let _wrapped = wrapper;
+    let result = []
+    if (_wrapped.node.type.WrappedComponent) {
+      let context = {}
+      if (_wrapped._passedContext) {
+        for (const prop in _wrapped.node.type.contextTypes) {
+          context[prop] = _wrapped._passedContext[prop]
+        }
+      }
+      _wrapped = _wrapped.dive({context})
+      if (predicate(_wrapped, wrapper)) {
+        result.push(_wrapped)
+        if (single) {
+          return _wrapped;
+        }
+      }
+      result = result.concat(this.diveIntoShallowed(_wrapped.shallow(), predicate, single))
+        .filter(el => el)
+      if (single && result.length) {
+        return result.shift()
+      }
+    }
+    result = result.concat(wrapper.findWhere(predicate).nodes)
+      .filter(el => el)
+
+    return single ? result.shift() : result;
   }
 }

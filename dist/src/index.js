@@ -45,56 +45,6 @@ var HOCEnzyme = function () {
       };
     }
   }, {
-    key: 'diveIntoShallowed',
-    value: function diveIntoShallowed(wrapper, predicate) {
-      var single = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
-
-      var _wrapped = wrapper;
-      var result = [];
-      if (_wrapped.node.type.WrappedComponent) {
-        var context = {};
-        if (_wrapped._passedContext) {
-          for (var prop in _wrapped.node.type.contextTypes) {
-            context[prop] = _wrapped._passedContext[prop];
-          }
-        }
-        _wrapped = _wrapped.dive({ context: context });
-        if (predicate(_wrapped, wrapper)) {
-          result.push(_wrapped);
-          if (single) {
-            return _wrapped;
-          }
-        }
-        result = result.concat(this.diveIntoShallowed(_wrapped.shallow(), predicate, single)).filter(function (el) {
-          return el;
-        });
-        if (single && result.length) {
-          return result.shift();
-        }
-      }
-      result = result.concat(wrapper.findWhere(predicate).nodes).filter(function (el) {
-        return el;
-      });
-
-      return single ? result.shift() : result;
-    }
-  }, {
-    key: '_diveAndProcess',
-    value: function _diveAndProcess(result, item, predicate, single) {
-      var extracted = this.diveIntoMounted(item, predicate, single);
-      if (single) {
-        if (extracted) {
-          return extracted;
-        }
-      } else {
-        if (extracted.length) {
-          result.push.apply(result, _toConsumableArray(extracted));
-        }
-      }
-
-      return null;
-    }
-  }, {
     key: 'diveIntoMounted',
     value: function diveIntoMounted(wrapper, predicate) {
       var _this = this;
@@ -133,8 +83,16 @@ var HOCEnzyme = function () {
             var _unwrapped = children[index];
             var child = void 0;
             if (_unwrapped && _unwrapped.type) {
-              var context = node.node.context || {};
-              child = (0, _enzyme.mount)(_unwrapped, { context: context });
+              var context = node.node.context || null;
+              for (var type in node.node.type.childContextTypes) {
+                context = context || {};
+                context[type] = node.prop(type);
+              }
+              if (context) {
+                child = (0, _enzyme.mount)(_unwrapped, { context: context });
+              } else {
+                child = (0, _enzyme.mount)(_unwrapped);
+              }
               child.__unwrapped = _unwrapped;
             }
             if (child) {
@@ -158,6 +116,56 @@ var HOCEnzyme = function () {
 
         return result;
       }, result);
+
+      return single ? result.shift() : result;
+    }
+  }, {
+    key: '_diveAndProcess',
+    value: function _diveAndProcess(result, item, predicate, single) {
+      var extracted = this.diveIntoMounted(item, predicate, single);
+      if (single) {
+        if (extracted) {
+          return extracted;
+        }
+      } else {
+        if (extracted.length) {
+          result.push.apply(result, _toConsumableArray(extracted));
+        }
+      }
+
+      return null;
+    }
+  }, {
+    key: 'diveIntoShallowed',
+    value: function diveIntoShallowed(wrapper, predicate) {
+      var single = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : true;
+
+      var _wrapped = wrapper;
+      var result = [];
+      if (_wrapped.node.type.WrappedComponent) {
+        var context = {};
+        if (_wrapped._passedContext) {
+          for (var prop in _wrapped.node.type.contextTypes) {
+            context[prop] = _wrapped._passedContext[prop];
+          }
+        }
+        _wrapped = _wrapped.dive({ context: context });
+        if (predicate(_wrapped, wrapper)) {
+          result.push(_wrapped);
+          if (single) {
+            return _wrapped;
+          }
+        }
+        result = result.concat(this.diveIntoShallowed(_wrapped.shallow(), predicate, single)).filter(function (el) {
+          return el;
+        });
+        if (single && result.length) {
+          return result.shift();
+        }
+      }
+      result = result.concat(wrapper.findWhere(predicate).nodes).filter(function (el) {
+        return el;
+      });
 
       return single ? result.shift() : result;
     }
