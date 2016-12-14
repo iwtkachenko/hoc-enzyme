@@ -17,13 +17,39 @@ wrapper.diveInto((child) => child.type() == Text)
 
 With DOM rendering (mounted components)
 =======================================
+Usage with Redux && react-native-router-flux
+--------------------------------------------
+```javascript
+describe('Sandboxed react-native-router-flux width redux', () => {
+  let wrapper
+
+  jsdom()
+
+  before(() => {
+    wrapper = mount(<RouterComponent />)
+  })
+
+  it.only('should switch between views', () => {
+    let spy = sinon.spy(Actions, 'second')
+    const TmpCom = wrapper.find(RouterWithRedux).diveInto(
+      child => {
+        return child.type() == Scene && child.__unwrapped.key == 'home'
+      }
+    ).prop('component')
+    expect(store.getState()).to.have.deep.property('scene.sceneKey', 'home')
+    mount(<TmpCom />).diveInto(
+      child => child.type() == TouchableHighlight
+    ).prop('onPress')()
+    expect(store.getState()).to.have.deep.property('scene.sceneKey', 'second')
+  })
+})
+```
+
 Usage with Apollo
 -----------------
 ```javascript
 describe('Sandboxed react-native + apollo', () => {
   let wrapper
-
-  const options = {context: {client, store:{}}}
 
   jsdom()
 
@@ -45,10 +71,8 @@ describe('Sandboxed react-native + apollo', () => {
 })
 ```
 
-
 Usage with Relay
 ----------------
-
 ```javascript
 describe('<Home/>', () => {
   let wrapper = null
