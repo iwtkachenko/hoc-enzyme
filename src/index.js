@@ -54,9 +54,11 @@ export default class HOCEnzyme {
           let child;
           if (unwrapped && unwrapped.type) {
             let context = node.node.context || null
-            for (const type in node.node.type.childContextTypes) {
-              context = context || {}
-              context[type] = node.prop(type)
+            if (node.node.type && node.node.type.childContextTypes) {
+              for (const type in node.node.type.childContextTypes) {
+                context = context || {}
+                context[type] = node.prop(type)
+              }
             }
             if (context) {
               child = mount(unwrapped, {context})

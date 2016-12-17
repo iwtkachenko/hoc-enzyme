@@ -84,9 +84,11 @@ var HOCEnzyme = function () {
             var child = void 0;
             if (_unwrapped && _unwrapped.type) {
               var context = node.node.context || null;
-              for (var type in node.node.type.childContextTypes) {
-                context = context || {};
-                context[type] = node.prop(type);
+              if (node.node.type && node.node.type.childContextTypes) {
+                for (var type in node.node.type.childContextTypes) {
+                  context = context || {};
+                  context[type] = node.prop(type);
+                }
               }
               if (context) {
                 child = (0, _enzyme.mount)(_unwrapped, { context: context });
